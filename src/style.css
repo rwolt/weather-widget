@@ -1,0 +1,13 @@
+body {
+  font-family: 'Roboto Regular', 'Arial';
+}
+
+.city-name {
+  font-size: 36px;
+  color: purple;
+}
+
+.current-temp {
+  font-size: 28px;
+  color: black;
+}
