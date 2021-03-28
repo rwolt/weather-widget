@@ -22,7 +22,7 @@ import { Loader } from '@googlemaps/js-api-loader';
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = '96fbe31792d3ab0a6f8838c62dde7ca5';
+const API_KEY = '';
 
 //Load Google Maps API
 const loader = new Loader({
