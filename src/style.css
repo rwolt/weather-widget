@@ -11,3 +11,8 @@ body {
   font-size: 28px;
   color: black;
 }
+
+#forecast {
+  display: flex;
+  flex-direction: row;
+}
