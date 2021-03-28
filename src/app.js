@@ -26,7 +26,7 @@ const API_KEY = '96fbe31792d3ab0a6f8838c62dde7ca5';
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: 'AIzaSyBrlrNOQ1WhttjwHkXEuQgUf-OpogzGKig',
+  apiKey: '',
   version: 'weekly',
   libraries: ['places'],
 });
