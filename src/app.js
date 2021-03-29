@@ -1,6 +1,8 @@
 import './style.css';
 import axios from 'axios';
 import { Loader } from '@googlemaps/js-api-loader';
+import dayjs from 'dayjs';
+let config = require('../config');
 
 // async function getBrowserLocation() {
 //   navigator.geolocation.getCurrentPosition(success, error);
@@ -22,11 +24,11 @@ import { Loader } from '@googlemaps/js-api-loader';
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = '';
+const API_KEY = config.openWeatherKey;
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: '',
+  apiKey: config.googleMapsKey,
   version: 'weekly',
   libraries: ['places'],
 });
@@ -76,6 +78,8 @@ const viewer = (() => {
   const displayWeather = async (city) => {
     weather = await getWeather([city.lat, city.lon]);
     document.querySelector('#city-name').innerHTML = city.name;
+    let currentIcon = document.querySelector('#current-weather-icon');
+    currentIcon.src = `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}@4x.png`;
     document.querySelector('#current-temp').innerText = convertF(
       weather.current.temp
     );
@@ -87,10 +91,18 @@ const viewer = (() => {
     weather.daily.forEach((day) => {
       let card = document.createElement('div');
       card.classList.add('card');
+      let date = document.createElement('p');
       let info = document.createElement('p');
-      info.innerHTML += new Date(day.dt * 1000).toString() + '</br>';
-      info.innerHTML += 'Low: ' + convertF(day.temp.min) + '</br>';
+      info.classList.add('info');
+      let icon = document.createElement('img');
+      date.innerHTML += dayjs.unix(day.dt).format('ddd M/D') + '</br>';
+      info.innerHTML += info.innerHTML += '<p>' + day.weather[0].main + '</br>';
       info.innerHTML += 'High: ' + convertF(day.temp.max) + '</br>';
+      info.innerHTML += 'Low: ' + convertF(day.temp.min) + '</br>';
+
+      icon.src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+      card.appendChild(date);
+      card.appendChild(icon);
       card.appendChild(info);
       forecast.appendChild(card);
     });
