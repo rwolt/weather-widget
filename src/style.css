@@ -1,7 +1,52 @@
+@import url('https://fonts.googleapis.com/css2?family=Dosis:wght@600&display=swap');
+
 body {
   font-family: 'Roboto Regular', 'Arial';
+  margin: 0;
 }
 
+header {
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  background: #333;
+}
+
+#autocomplete {
+  height: 60px;
+  font-size: 36px;
+  padding: 10px;
+  border-radius: 10px;
+  border: 3px solid hsl(204, 94%, 53%);
+}
+
+#autocomplete:focus {
+  outline: none;
+}
+
+.pac-item {
+  height: 40px;
+  font-size: 30px;
+  padding: 5px;
+}
+
+.pac-matched {
+  font-size: inherit;
+}
+
+.logo {
+  font-size: 72px;
+  font-family: 'Dosis', sans-serif;
+  background: -webkit-linear-gradient(
+    0deg,
+    red 0%,
+    orange 40%,
+    yellow 55%,
+    hsl(204, 94%, 53%) 100%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
 .city-name {
   font-size: 36px;
   color: purple;
