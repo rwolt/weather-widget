@@ -91,19 +91,31 @@ const viewer = (() => {
     weather.daily.forEach((day) => {
       let card = document.createElement('div');
       card.classList.add('card');
+      //Create Elements for each day's card
       let date = document.createElement('p');
-      let info = document.createElement('p');
-      info.classList.add('info');
+      let info = document.createElement('div');
       let icon = document.createElement('img');
-      date.innerHTML += dayjs.unix(day.dt).format('ddd M/D') + '</br>';
-      info.innerHTML += info.innerHTML += '<p>' + day.weather[0].main + '</br>';
-      info.innerHTML += 'High: ' + convertF(day.temp.max) + '</br>';
-      info.innerHTML += 'Low: ' + convertF(day.temp.min) + '</br>';
+      let description = document.createElement('p');
 
+      //Convert the unix timestamp date into readable format
+      date.innerHTML = dayjs.unix(day.dt).format('ddd M/D');
+
+      //Display the High and Low temperatures
+      info.innerHTML = `<span class="high-temp">${convertF(
+        day.temp.max
+      )}</span> | <span class="low-temp">${convertF(day.temp.min)}</span>`;
+
+      //Retrieve the icon matching the forecasted weather condition
       icon.src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
+
+      //Display the description of the forecasted weather condition
+      description.innerHTML += day.weather[0].main;
+      //Append elements to the day's card
       card.appendChild(date);
-      card.appendChild(icon);
       card.appendChild(info);
+      card.appendChild(icon);
+      card.appendChild(description);
+
       forecast.appendChild(card);
     });
   };
