@@ -1,6 +1,7 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const { resourceUsage } = require('process');
 
 module.exports = {
   entry: './src/app.js',
@@ -14,6 +15,10 @@ module.exports = {
       {
         test: /\.js$/i,
         use: ['source-map-loader'],
+      },
+      {
+        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        type: 'asset/resource',
       },
     ],
   },

@@ -2,7 +2,28 @@ import './style.css';
 import axios from 'axios';
 import { Loader } from '@googlemaps/js-api-loader';
 import dayjs from 'dayjs';
+import image from './images/settings-gray.png';
 let config = require('../config');
+
+document.querySelector('.settings').src = image;
+
+document.querySelector('.c-switch').addEventListener('click', function (e) {
+  if (viewer.getDegrees() == 'fahr' && document.querySelector('.card')) {
+    viewer.updateTemps('celc');
+  }
+  viewer.setDegrees('celc');
+  e.target.classList.add('selected');
+  document.querySelector('.f-switch').classList.remove('selected');
+});
+
+document.querySelector('.f-switch').addEventListener('click', function (e) {
+  if (viewer.getDegrees() == 'celc' && document.querySelector('.card')) {
+    viewer.updateTemps('fahr');
+  }
+  viewer.setDegrees('fahr');
+  e.target.classList.add('selected');
+  document.querySelector('.c-switch').classList.remove('selected');
+});
 
 // async function getBrowserLocation() {
 //   navigator.geolocation.getCurrentPosition(success, error);
@@ -74,15 +95,19 @@ async function getWeather([lat, lon]) {
 
 const viewer = (() => {
   let weather;
+  let degrees = 'fahr';
   //Display the current weather
   const displayWeather = async (city) => {
     weather = await getWeather([city.lat, city.lon]);
     document.querySelector('#city-name').innerHTML = city.name;
     let currentIcon = document.querySelector('#current-weather-icon');
     currentIcon.src = `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}@4x.png`;
-    document.querySelector('#current-temp').innerText = convertF(
-      weather.current.temp
+    document.querySelector('#current-temp').innerText = convertK(
+      weather.current.temp,
+      viewer.getDegrees()
     );
+    document.querySelector('#current-temp').dataset.currentTemp =
+      weather.current.temp;
   };
   //Display the 7 day forecast
   const updateForecast = () => {
@@ -91,9 +116,12 @@ const viewer = (() => {
     weather.daily.forEach((day) => {
       let card = document.createElement('div');
       card.classList.add('card');
+      card.dataset.maxTemp = day.temp.max;
+      card.dataset.minTemp = day.temp.min;
       //Create Elements for each day's card
       let date = document.createElement('p');
       let info = document.createElement('div');
+      info.classList.add('info');
       let icon = document.createElement('img');
       let description = document.createElement('p');
 
@@ -101,9 +129,13 @@ const viewer = (() => {
       date.innerHTML = dayjs.unix(day.dt).format('ddd M/D');
 
       //Display the High and Low temperatures
-      info.innerHTML = `<span class="high-temp">${convertF(
-        day.temp.max
-      )}</span> | <span class="low-temp">${convertF(day.temp.min)}</span>`;
+      info.innerHTML = `<span class="high-temp">${convertK(
+        day.temp.max,
+        viewer.getDegrees()
+      )}</span> | <span class="low-temp">${convertK(
+        day.temp.min,
+        viewer.getDegrees()
+      )}</span>`;
 
       //Retrieve the icon matching the forecasted weather condition
       icon.src = `http://openweathermap.org/img/wn/${day.weather[0].icon}@2x.png`;
@@ -119,9 +151,55 @@ const viewer = (() => {
       forecast.appendChild(card);
     });
   };
-  return { displayWeather, updateForecast };
+
+  function getDegrees() {
+    return degrees;
+  }
+
+  function setDegrees(unit) {
+    if (unit == 'fahr') {
+      degrees = 'fahr';
+    } else if (unit == 'celc') {
+      degrees = 'celc';
+    }
+  }
+
+  //Update the temperature to state of viewer.degrees
+  function updateTemps(unit) {
+    document.querySelector('#current-temp').innerText = convertK(
+      document.querySelector('#current-temp').dataset.currentTemp,
+      unit
+    );
+    let cards = document.querySelectorAll('.card');
+    cards.forEach((card) => {
+      card.querySelector(
+        '.info'
+      ).innerHTML = `<span class="high-temp">${convertK(
+        card.dataset.maxTemp,
+        unit
+      )}</span> | <span class="low-temp">${convertK(
+        card.dataset.minTemp,
+        unit
+      )}</span>`;
+    });
+  }
+
+  return {
+    displayWeather,
+    updateForecast,
+    getDegrees,
+    setDegrees,
+    updateTemps,
+  };
 })();
 
-function convertF(degreesKelvin) {
-  return (((degreesKelvin - 273.15) * 9) / 5 + 32).toFixed(0);
+//Convert Degrees Kelvin to Fahrenheit or Celcius
+function convertK(degreesKelvin, unit) {
+  if (unit == 'fahr') {
+    return (((degreesKelvin - 273.15) * 9) / 5 + 32).toFixed(0);
+  } else if (unit == 'celc') {
+    return (degreesKelvin - 273.15).toFixed(0);
+  } else {
+    return new Error('Invalid Output Unit: Must be Fahrenheit or Celcius');
+  }
 }
