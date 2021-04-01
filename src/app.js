@@ -58,6 +58,7 @@ async function success(position) {
   );
   console.log(response);
   city.name = response.data.results[0].formatted_address;
+  city.type = 'browserGeo';
   viewer.displayWeather(city).then((weather) => viewer.updateForecast(weather));
 }
 
@@ -98,6 +99,7 @@ function onPlaceChanged() {
     document.getElementById('autocomplete').placeholder = 'Search Locations';
   } else {
     console.log(place);
+    document.querySelector('#autocomplete').value = '';
     //Assign place details to variables and call display controller
     let city = {};
     city.name = place.adr_address;
@@ -116,13 +118,27 @@ async function getWeather([lat, lon]) {
   return response.data;
 }
 
+//DOM Controller Module
 const viewer = (() => {
   let weather;
   let degrees = 'fahr';
   //Display the current weather
   const displayWeather = async (city) => {
     weather = await getWeather([city.lat, city.lon]);
-    document.querySelector('#city-name').innerHTML = city.name;
+    let currentCity = document.getElementById('city-name');
+    currentCity.innerHTML = city.name;
+    if (!city.type) {
+      let locality = currentCity.querySelector('.locality').textContent;
+      let region = currentCity.querySelector('.region').textContent;
+      let countryName = currentCity.querySelector('.country-name').textContent;
+      //If the city is in the USA, remove country from the address
+      if (currentCity.querySelector('.country-name').innerText == 'USA') {
+        currentCity.innerHTML = `${locality}, ${region}`;
+      } else {
+        currentCity.innerHTML = `${locality}, ${region}, ${countryName}`;
+      }
+    }
+
     let currentIcon = document.querySelector('#current-weather-icon');
     currentIcon.src = `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}@4x.png`;
     document.querySelector('#current-temp').innerText = convertK(
@@ -175,18 +191,6 @@ const viewer = (() => {
     });
   };
 
-  function getDegrees() {
-    return degrees;
-  }
-
-  function setDegrees(unit) {
-    if (unit == 'fahr') {
-      degrees = 'fahr';
-    } else if (unit == 'celc') {
-      degrees = 'celc';
-    }
-  }
-
   //Update the temperature to state of viewer.degrees
   function updateTemps(unit) {
     document.querySelector('#current-temp').innerText = convertK(
@@ -205,6 +209,19 @@ const viewer = (() => {
         unit
       )}</span>`;
     });
+  }
+
+  //Getter and setter for private variable degrees
+  function getDegrees() {
+    return degrees;
+  }
+
+  function setDegrees(unit) {
+    if (unit == 'fahr') {
+      degrees = 'fahr';
+    } else if (unit == 'celc') {
+      degrees = 'celc';
+    }
   }
 
   return {
