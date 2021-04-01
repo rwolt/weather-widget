@@ -6,17 +6,37 @@ import image from './images/settings-gray.png';
 let config = require('../config');
 
 document.querySelector('.settings').src = image;
+document.querySelector('.settings').addEventListener('click', function (e) {
+  e.stopPropagation();
+  document.querySelector('.drop-content').classList.toggle('invisible');
+});
+
+window.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (
+    !document.querySelector('.drop-content').classList.contains('invisible')
+  ) {
+    document.querySelector('.drop-content').classList.add('invisible');
+  }
+});
+
+document.querySelector('.geo').addEventListener('click', function (e) {
+  getBrowserLocation();
+});
 
 document.querySelector('.c-switch').addEventListener('click', function (e) {
+  e.stopPropagation();
   if (viewer.getDegrees() == 'fahr' && document.querySelector('.card')) {
     viewer.updateTemps('celc');
   }
   viewer.setDegrees('celc');
   e.target.classList.add('selected');
   document.querySelector('.f-switch').classList.remove('selected');
+  e.stopPropagation();
 });
 
 document.querySelector('.f-switch').addEventListener('click', function (e) {
+  e.stopPropagation();
   if (viewer.getDegrees() == 'celc' && document.querySelector('.card')) {
     viewer.updateTemps('fahr');
   }
@@ -25,23 +45,25 @@ document.querySelector('.f-switch').addEventListener('click', function (e) {
   document.querySelector('.c-switch').classList.remove('selected');
 });
 
-// async function getBrowserLocation() {
-//   navigator.geolocation.getCurrentPosition(success, error);
-// }
+async function getBrowserLocation() {
+  navigator.geolocation.getCurrentPosition(success, error);
+}
 
-// async function success(position) {
-//   let browserWeather = await getWeather([
-//     position.coords.latitude,
-//     position.coords.longitude,
-//   ]);
-//   console.log(browserWeather);
-// }
+async function success(position) {
+  let city = {};
+  city.lat = position.coords.latitude;
+  city.lon = position.coords.longitude;
+  let response = await axios.get(
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${config.googleMapsKey}`
+  );
+  console.log(response);
+  city.name = response.data.results[0].formatted_address;
+  viewer.displayWeather(city).then((weather) => viewer.updateForecast(weather));
+}
 
-// function error(err) {
-//   console.error(`ERROR: ${err.code}: ${err.message}`);
-// }
-
-// getBrowserLocation();
+function error(err) {
+  console.error(`ERROR: ${err.code}: ${err.message}`);
+}
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
@@ -75,6 +97,7 @@ function onPlaceChanged() {
     //User did not select a prediction; reset the input field
     document.getElementById('autocomplete').placeholder = 'Search Locations';
   } else {
+    console.log(place);
     //Assign place details to variables and call display controller
     let city = {};
     city.name = place.adr_address;
