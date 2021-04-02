@@ -177,19 +177,47 @@ header {
   padding-bottom: 10px;
 }
 
-.current-weather {
+.current-conditions {
   display: flex;
   align-items: center;
 }
 
+.current-weather {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 1000px;
+}
+
+.pane {
+  margin: 0px 20px;
+}
+
+.api-times {
+  background-color: rgb(240, 240, 187);
+  border: 1px solid coral;
+  border-radius: 3px;
+  padding: 5px;
+  width: 375px;
+  position: fixed;
+  top: 170px;
+  left: 100px;
+}
+
+.api-times:empty {
+  display: none;
+}
+
 #city-name {
-  font-size: 32px;
-  color: purple;
+  font-size: 36px;
+  font-weight: bold;
+  color: black;
 }
 
 #current-temp {
-  font-size: 32px;
+  font-size: 36px;
   color: black;
+  font-weight: bold;
 }
 
 #forecast {

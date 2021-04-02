@@ -7,10 +7,10 @@ let config = require('../config');
 
 //Timer object for Response Time Values
 let timer = {
-  browserGeolocateTime: null,
-  reverseGeocodeTime: null,
-  googlePlacesApiTime: null,
-  openWeatherApiTime: null,
+  // browserGeolocateTime: null,
+  reverseGeocodeTime: 0,
+  // googlePlacesApiTime: null,
+  openWeatherApiTime: 0,
 };
 
 document.querySelector('.settings').src = image;
@@ -56,20 +56,22 @@ document.querySelector('.f-switch').addEventListener('click', function (e) {
 });
 
 async function getBrowserLocation() {
+  timer.browserGeolocateTime = new Date();
   navigator.geolocation.getCurrentPosition(success, error);
 }
 
 async function success(position) {
+  let end = new Date();
+  timer.browserGeolocateTime = timer.browserGeolocateTime - end;
   let city = {};
   city.lat = position.coords.latitude;
   city.lon = position.coords.longitude;
-  timer.googleMapsTime = new Date();
+  timer.reverseGeocodeTime = new Date();
   let response = await axios.get(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${config.googleMapsKey}`
   );
-  let end = new Date();
-  timer.googleMapsTime = end - timer.googleMapsTime;
-  console.log(timer.googleMapsTime);
+  let endTimer = new Date();
+  timer.reverseGeocodeTime = endTimer - timer.reverseGeocodeTime;
   city.name = response.data.results[0].formatted_address;
   city.type = 'browserGeo';
   viewer.displayWeather(city).then((weather) => viewer.updateForecast(weather));
@@ -100,11 +102,16 @@ loader.load().then(() => {
       fields: ['geometry', 'adr_address'],
     }
   );
-  autocomplete.addListener('place_changed', onPlaceChanged);
+  autocomplete.addListener('place_changed', function (e) {
+    timer.googlePlacesApiTime = new Date();
+    onPlaceChanged();
+  });
 });
 
 //Callback when place is selected
 function onPlaceChanged() {
+  let end = new Date();
+  timer.googlePlacesApiTime = end - timer.googlePlacesApiTime;
   let place = autocomplete.getPlace();
 
   if (!place.geometry) {
@@ -126,9 +133,12 @@ function onPlaceChanged() {
 
 //Get weather data as JSON from OpenWeather API
 async function getWeather([lat, lon]) {
+  timer.openWeatherApiTime = new Date();
   let response = await axios.get(
     `${BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_KEY}`
   );
+  let end = new Date();
+  timer.openWeatherApiTime = end - timer.openWeatherApiTime;
   return response.data;
 }
 
@@ -137,8 +147,10 @@ const viewer = (() => {
   let weather;
   let degrees = 'fahr';
   //Display the current weather
+
   const displayWeather = async (city) => {
     weather = await getWeather([city.lat, city.lon]);
+    document.querySelector('.api-times').innerHTML = '';
     let currentCity = document.getElementById('city-name');
     currentCity.innerHTML = city.name;
     if (!city.type) {
@@ -164,6 +176,7 @@ const viewer = (() => {
       temp.innerText += '°C';
     }
     temp.dataset.currentTemp = weather.current.temp;
+    viewer.displayTimes();
   };
   //Display the 7 day forecast
   const updateForecast = () => {
@@ -207,6 +220,29 @@ const viewer = (() => {
       forecast.appendChild(card);
     });
   };
+
+  function displayTimes() {
+    // document.querySelector('.geo-api-time').innerText =
+    //   'Browser Geolocation API Time: ' + timer.browserGeolocateTime + ' ms';
+    if (timer.reverseGeocodeTime) {
+      let geoTime = document.createElement('p');
+      geoTime.innerText =
+        'Google Reverse Geocode Response Time: ' +
+        timer.reverseGeocodeTime +
+        ' ms';
+      //Reset the timer after displaying in the DOM
+      timer.reverseGeocodeTime = 0;
+      document.querySelector('.api-times').appendChild(geoTime);
+    }
+    // document.querySelector('.google-places-time').innerText =
+    //   'Google Places Autocomplete API Time: ' +
+    //   timer.googlePlacesApiTime +
+    //   ' ms';
+    let weatherTime = document.createElement('p');
+    weatherTime.innerText =
+      'OpenWeather Response Time: ' + timer.openWeatherApiTime + ' ms';
+    document.querySelector('.api-times').appendChild(weatherTime);
+  }
 
   //Update the temperature to state of viewer.degrees
   function updateTemps(unit) {
@@ -253,6 +289,7 @@ const viewer = (() => {
     getDegrees,
     setDegrees,
     updateTemps,
+    displayTimes,
   };
 })();
 
