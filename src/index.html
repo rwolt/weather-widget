@@ -24,10 +24,22 @@
       </header>
     </div>
     <div class="content">
-      <p id="city-name"></p>
-      <img id="current-weather-icon" />
-      <p id="current-temp"></p>
-      <p id="current-time"></p>
+      <div class="current-weather">
+        <div class="pane current-conditions">
+          <img id="current-weather-icon" />
+        </div>
+        <div class="pane current-temps">
+          <p id="city-name"></p>
+          <p id="current-temp"></p>
+          <p id="feels-like"></p>
+        </div>
+        <div class="pane api-times">
+          <p class="geo-api-time"></p>
+          <p class="reverse-geocode-time"></p>
+          <p class="google-places-time"></p>
+          <p class="open-weather-time"></p>
+        </div>
+      </div>
       <div id="forecast"></div>
     </div>
   </body>

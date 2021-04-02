@@ -5,6 +5,14 @@ import dayjs from 'dayjs';
 import image from './images/settings-gray.png';
 let config = require('../config');
 
+//Timer object for Response Time Values
+let timer = {
+  browserGeolocateTime: null,
+  reverseGeocodeTime: null,
+  googlePlacesApiTime: null,
+  openWeatherApiTime: null,
+};
+
 document.querySelector('.settings').src = image;
 document.querySelector('.settings').addEventListener('click', function (e) {
   e.stopPropagation();
@@ -24,6 +32,7 @@ document.querySelector('.geo').addEventListener('click', function (e) {
   getBrowserLocation();
 });
 
+//Event handler for Celcius Button
 document.querySelector('.c-switch').addEventListener('click', function (e) {
   e.stopPropagation();
   if (viewer.getDegrees() == 'fahr' && document.querySelector('.card')) {
@@ -35,12 +44,13 @@ document.querySelector('.c-switch').addEventListener('click', function (e) {
   e.stopPropagation();
 });
 
+//Event handler for Fahrenheit button
 document.querySelector('.f-switch').addEventListener('click', function (e) {
   e.stopPropagation();
   if (viewer.getDegrees() == 'celc' && document.querySelector('.card')) {
     viewer.updateTemps('fahr');
+    viewer.setDegrees('fahr');
   }
-  viewer.setDegrees('fahr');
   e.target.classList.add('selected');
   document.querySelector('.c-switch').classList.remove('selected');
 });
@@ -53,10 +63,13 @@ async function success(position) {
   let city = {};
   city.lat = position.coords.latitude;
   city.lon = position.coords.longitude;
+  timer.googleMapsTime = new Date();
   let response = await axios.get(
     `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${config.googleMapsKey}`
   );
-  console.log(response);
+  let end = new Date();
+  timer.googleMapsTime = end - timer.googleMapsTime;
+  console.log(timer.googleMapsTime);
   city.name = response.data.results[0].formatted_address;
   city.type = 'browserGeo';
   viewer.displayWeather(city).then((weather) => viewer.updateForecast(weather));
@@ -111,6 +124,7 @@ function onPlaceChanged() {
   }
 }
 
+//Get weather data as JSON from OpenWeather API
 async function getWeather([lat, lon]) {
   let response = await axios.get(
     `${BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_KEY}`
@@ -141,12 +155,15 @@ const viewer = (() => {
 
     let currentIcon = document.querySelector('#current-weather-icon');
     currentIcon.src = `http://openweathermap.org/img/wn/${weather.current.weather[0].icon}@4x.png`;
-    document.querySelector('#current-temp').innerText = convertK(
-      weather.current.temp,
-      viewer.getDegrees()
-    );
-    document.querySelector('#current-temp').dataset.currentTemp =
-      weather.current.temp;
+
+    let temp = document.querySelector('#current-temp');
+    temp.innerText = convertK(weather.current.temp, viewer.getDegrees());
+    if (viewer.getDegrees() == 'fahr') {
+      temp.innerText += '°F';
+    } else {
+      temp.innerText += '°C';
+    }
+    temp.dataset.currentTemp = weather.current.temp;
   };
   //Display the 7 day forecast
   const updateForecast = () => {
@@ -193,10 +210,16 @@ const viewer = (() => {
 
   //Update the temperature to state of viewer.degrees
   function updateTemps(unit) {
-    document.querySelector('#current-temp').innerText = convertK(
-      document.querySelector('#current-temp').dataset.currentTemp,
-      unit
-    );
+    //Update the current temp with the correct units
+    let temp = document.querySelector('#current-temp');
+    temp.innerText = convertK(temp.dataset.currentTemp, unit);
+    if (unit == 'fahr') {
+      temp.innerText += '°F';
+    } else if (unit == 'celc') {
+      temp.innerText += '°C';
+    }
+
+    //Convert the high and low temps for each day of the forecast
     let cards = document.querySelectorAll('.card');
     cards.forEach((card) => {
       card.querySelector(
