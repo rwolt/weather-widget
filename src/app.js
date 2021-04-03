@@ -17,11 +17,11 @@ let config = require('../config');
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = env.OPENWEATHER_API_KEY;
+const API_KEY = env.openweather_key;
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: env.GMAPS_API_KEY,
+  apiKey: env.gmaps_key,
   version: 'weekly',
   libraries: ['places'],
 });
@@ -72,7 +72,7 @@ async function success(position) {
   city.lat = position.coords.latitude;
   city.lon = position.coords.longitude;
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${env.GMAPS_API_KEY}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${env.gmaps_key}`
   );
   city.name = response.data.results[0].formatted_address;
   city.type = 'browserGeo';
