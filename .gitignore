@@ -2,3 +2,7 @@ node_modules
 dist
 config.js
 .swp
+.env
+netlify.toml
+functions
+.env_example

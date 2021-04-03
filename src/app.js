@@ -5,60 +5,23 @@ import dayjs from 'dayjs';
 import image from './images/settings-gray.png';
 let config = require('../config');
 
-//Add the imported settings gear image to the page
-document.querySelector('.settings').src = image;
+//Retrieve the API Key from the Server
 
-//Show the drop menu when the settings button is clicked
-document.querySelector('.settings').addEventListener('click', function (e) {
-  e.stopPropagation();
-  document.querySelector('.drop-content').classList.toggle('invisible');
-});
-
-//Hide the drop menu if it is visible, when clicking anywhere on the page
-window.addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (
-    !document.querySelector('.drop-content').classList.contains('invisible')
-  ) {
-    document.querySelector('.drop-content').classList.add('invisible');
-  }
-});
-
-//Fetch the browser's location when the geolocation button is clicked
-document.querySelector('.geo').addEventListener('click', function (e) {
-  getBrowserLocation();
-});
-
-//Event handler for Celcius Button
-document.querySelector('.c-switch').addEventListener('click', function (e) {
-  e.stopPropagation();
-  if (viewer.getDegrees() == 'fahr' && document.querySelector('.card')) {
-    viewer.updateTemps('celc');
-  }
-  viewer.setDegrees('celc');
-  e.target.classList.add('selected');
-  document.querySelector('.f-switch').classList.remove('selected');
-  e.stopPropagation();
-});
-
-//Event handler for Fahrenheit button
-document.querySelector('.f-switch').addEventListener('click', function (e) {
-  e.stopPropagation();
-  if (viewer.getDegrees() == 'celc' && document.querySelector('.card')) {
-    viewer.updateTemps('fahr');
-    viewer.setDegrees('fahr');
-  }
-  e.target.classList.add('selected');
-  document.querySelector('.c-switch').classList.remove('selected');
-});
+// const keyLoader = async () => {
+//   let _key;
+//   await axios.get(`/.netlify/functions/gmaps-key-loader`).then((response) => {
+//     _key = response.data.API_KEY;
+//   });
+//   return { key: _key };
+// };
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = config.openWeatherKey;
+const API_KEY = secret.OPENWEATHER_API_KEY;
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: config.googleMapsKey,
+  apiKey: secret.GMAPS_API_KEY,
   version: 'weekly',
   libraries: ['places'],
 });
@@ -109,7 +72,7 @@ async function success(position) {
   city.lat = position.coords.latitude;
   city.lon = position.coords.longitude;
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${config.googleMapsKey}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${secret.GMAPS_API_KEY}`
   );
   city.name = response.data.results[0].formatted_address;
   city.type = 'browserGeo';
@@ -125,14 +88,26 @@ async function getWeather([lat, lon]) {
   let response = await axios.get(
     `${BASE_URL}?lat=${lat}&lon=${lon}&exclude=minutely,hourly&appid=${API_KEY}`
   );
-  let end = new Date();
   return response.data;
 }
 
 //DOM Controller Module
 const viewer = (() => {
   let weather;
-  let degrees = 'fahr';
+  let _degrees = 'fahr';
+
+  //Getter and setter for private variable degrees
+  function getDegrees() {
+    return _degrees;
+  }
+
+  function setDegrees(unit) {
+    if (unit == 'fahr') {
+      _degrees = 'fahr';
+    } else if (unit == 'celc') {
+      _degrees = 'celc';
+    }
+  }
 
   //Display the current weather
   const displayWeather = async (city) => {
@@ -237,16 +212,14 @@ const viewer = (() => {
     });
   }
 
-  //Getter and setter for private variable degrees
-  function getDegrees() {
-    return degrees;
-  }
-
-  function setDegrees(unit) {
+  //Convert Degrees Kelvin to Fahrenheit or Celcius
+  function convertK(degreesKelvin, unit) {
     if (unit == 'fahr') {
-      degrees = 'fahr';
+      return (((degreesKelvin - 273.15) * 9) / 5 + 32).toFixed(0);
     } else if (unit == 'celc') {
-      degrees = 'celc';
+      return (degreesKelvin - 273.15).toFixed(0);
+    } else {
+      return new Error('Invalid Output Unit: Must be Fahrenheit or Celcius');
     }
   }
 
@@ -256,16 +229,53 @@ const viewer = (() => {
     getDegrees,
     setDegrees,
     updateTemps,
+    convertK,
   };
 })();
 
-//Convert Degrees Kelvin to Fahrenheit or Celcius
-function convertK(degreesKelvin, unit) {
-  if (unit == 'fahr') {
-    return (((degreesKelvin - 273.15) * 9) / 5 + 32).toFixed(0);
-  } else if (unit == 'celc') {
-    return (degreesKelvin - 273.15).toFixed(0);
-  } else {
-    return new Error('Invalid Output Unit: Must be Fahrenheit or Celcius');
+//Add the imported settings gear image to the page
+document.querySelector('.settings').src = image;
+
+//Show the drop menu when the settings button is clicked
+document.querySelector('.settings').addEventListener('click', function (e) {
+  e.stopPropagation();
+  document.querySelector('.drop-content').classList.toggle('invisible');
+});
+
+//Hide the drop menu if it is visible, when clicking anywhere on the page
+window.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (
+    !document.querySelector('.drop-content').classList.contains('invisible')
+  ) {
+    document.querySelector('.drop-content').classList.add('invisible');
   }
-}
+});
+
+//Fetch the browser's location when the geolocation button is clicked
+document.querySelector('.geo').addEventListener('click', function (e) {
+  getBrowserLocation();
+});
+
+//Event handler for Celcius Button
+document.querySelector('.c-switch').addEventListener('click', function (e) {
+  e.stopPropagation();
+  if (viewer.getDegrees() == 'fahr' && document.querySelector('.card')) {
+    viewer.updateTemps('celc');
+  }
+  viewer.setDegrees('celc');
+  e.target.classList.add('selected');
+  document.querySelector('.f-switch').classList.remove('selected');
+  e.stopPropagation();
+});
+
+//Event handler for Fahrenheit button
+document.querySelector('.f-switch').addEventListener('click', function (e) {
+  e.stopPropagation();
+  if (viewer.getDegrees() == 'celc' && document.querySelector('.card')) {
+    viewer.updateTemps('fahr');
+    viewer.setDegrees('fahr');
+  }
+  e.target.classList.add('selected');
+  document.querySelector('.c-switch').classList.remove('selected');
+});
