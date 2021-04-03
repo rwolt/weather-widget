@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Weather Widget</title>
+  <script defer src="app.js"></script></head>
+  <body>
+    <div class="border-wrap">
+      <header>
+        <h1 class="logo">weather</h1>
+        <div class="search">
+          <input id="autocomplete" placeholder="Search Locations" type="text" />
+          <div class="geo"></div>
+          <div class="dropdown">
+            <img class="settings" />
+            <div class="drop-content invisible">
+              <div class="f-switch selected">°F</div>
+              <div class="c-switch">°C</div>
+            </div>
+          </div>
+        </div>
+      </header>
+    </div>
+    <div class="content">
+      <div class="current-weather">
+        <div class="pane current-conditions">
+          <img id="current-weather-icon" />
+          <div class="temps">
+            <p id="city-name"></p>
+            <p id="current-temp"></p>
+            <p id="feels-like"></p>
+          </div>
+        </div>
+        <div class="pane api-times"></div>
+      </div>
+      <div id="forecast"></div>
+    </div>
+  </body>
+</html>
