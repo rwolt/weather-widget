@@ -11,6 +11,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0;
 }
 
 .border-wrap {
@@ -68,9 +69,10 @@ header {
 .drop-content {
   position: absolute;
   display: flex;
-  width: 140px;
-  margin: 0px 16px;
-  height: 74px;
+  margin-left: 38px;
+  align-items: center;
+  width: 100px;
+  height: 50px;
   background: #fff;
   border: 2px solid #006f9e;
   border-radius: 3px;
@@ -78,8 +80,8 @@ header {
 
 .c-switch,
 .f-switch {
-  width: 70px;
-  height: 70px;
+  width: 48px;
+  height: 46px;
   color: #006f9e;
   display: flex;
   justify-content: center;
@@ -186,7 +188,8 @@ header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  width: 1000px;
+  justify-content: center;
+  width: 100vw;
 }
 
 .pane {
@@ -214,6 +217,10 @@ header {
   color: black;
 }
 
+.temps {
+  width: 400px;
+}
+
 #current-temp {
   font-size: 36px;
   color: black;
@@ -239,4 +246,204 @@ header {
 
 .low-temp {
   color: hsl(204, 94%, 53%);
+}
+
+@media screen and (min-width: 750px) and (max-width: 1000px) {
+  .logo {
+    font-size: 48px;
+    padding-left: 20px;
+    margin: 0;
+  }
+
+  .settings {
+    padding: 5px;
+    margin-left: 35%;
+    height: 32px;
+  }
+
+  .drop-content {
+    position: absolute;
+    display: flex;
+    width: 70px;
+    margin: 0px 16px;
+    height: 40px;
+    background: #fff;
+    border: 2px solid #006f9e;
+    border-radius: 3px;
+  }
+
+  .invisible {
+    display: none;
+  }
+
+  .c-switch,
+  .f-switch {
+    width: 33px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  #city-name,
+  #current-temp {
+    font-size: 32px;
+  }
+
+  .temps {
+    width: 200px;
+    font-size: 28px;
+  }
+
+  #forecast {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    padding: 0px 20px;
+    font-size: 16px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 14vw;
+  }
+
+  .icon {
+    width: 12vw;
+  }
+}
+
+@media screen and (min-width: 300px) and (max-width: 750px) {
+  header {
+    justify-content: space-evenly;
+    width: 100vw;
+    height: 210px;
+    flex-direction: column;
+  }
+
+  .border-wrap {
+    width: 100vw;
+    height: 212px;
+  }
+
+  .logo {
+    padding: 46px 0 0 0;
+    font-size: 56px;
+    margin: 0;
+  }
+
+  .search {
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  #autocomplete {
+    height: 40px;
+    width: 80%;
+    font-size: 18px;
+    margin-left: 20px;
+    padding-right: 8%;
+    border: 2px solid hsl(204, 94%, 53%);
+  }
+
+  .pac-item {
+    height: 30px;
+    font-size: 18px;
+    padding: 5px;
+  }
+
+  .pac-item-query {
+    font-size: 18px;
+    padding: 5px;
+  }
+
+  .geo {
+    width: 26px;
+    height: 26px;
+    /* padding-left: 5px; */
+    margin-left: -28px;
+    background-size: 20px;
+    position: relative;
+  }
+
+  .settings {
+    padding: 5px;
+    margin-left: 35%;
+    height: 32px;
+  }
+
+  .drop-content {
+    position: absolute;
+    display: flex;
+    width: 70px;
+    margin: 0px 16px;
+    height: 40px;
+    background: #fff;
+    border: 2px solid #006f9e;
+    border-radius: 3px;
+  }
+
+  .invisible {
+    display: none;
+  }
+
+  .c-switch,
+  .f-switch {
+    width: 33px;
+    height: 36px;
+    font-size: 14px;
+  }
+
+  .content {
+    margin-top: 230px;
+  }
+
+  .current-conditions {
+    display: flex;
+    align-items: center;
+  }
+
+  .temps {
+    width: 170px;
+  }
+
+  #current-weather-icon {
+    width: 150px;
+  }
+
+  #city-name,
+  #current-temp {
+    font-size: 24px;
+  }
+
+  #forecast {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100vw;
+    padding: 0px 20px;
+    font-size: 12px;
+  }
+
+  .forecast-date {
+    font-size: 10px;
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 14vw;
+  }
+
+  .icon {
+    width: 12vw;
+  }
 }

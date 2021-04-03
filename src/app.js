@@ -176,9 +176,11 @@ const viewer = (() => {
       card.dataset.minTemp = day.temp.min;
       //Create Elements for each day's card
       let date = document.createElement('p');
+      date.classList.add('forecast-date');
       let info = document.createElement('div');
       info.classList.add('info');
       let icon = document.createElement('img');
+      icon.classList.add('icon');
       let description = document.createElement('p');
 
       //Convert the unix timestamp date into readable format using dayjs
