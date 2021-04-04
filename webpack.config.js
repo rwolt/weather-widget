@@ -4,7 +4,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { resourceUsage } = require('process');
 
 module.exports = {
-  entry: './src/app.js',
+  entry: path.resolve(__dirname, './src/app.js'),
   mode: 'development',
   module: {
     rules: [

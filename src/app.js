@@ -3,25 +3,14 @@ import axios from 'axios';
 import { Loader } from '@googlemaps/js-api-loader';
 import dayjs from 'dayjs';
 import image from './images/settings-gray.png';
-let config = require('../config');
-
-//Retrieve the API Key from the Server
-
-// const keyLoader = async () => {
-//   let _key;
-//   await axios.get(`/.netlify/functions/gmaps-key-loader`).then((response) => {
-//     _key = response.data.API_KEY;
-//   });
-//   return { key: _key };
-// };
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = process.env.openweather_key;
+const API_KEY = '';
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: process.env.gmaps_key,
+  apiKey: '',
   version: 'weekly',
   libraries: ['places'],
 });
@@ -72,7 +61,7 @@ async function success(position) {
   city.lat = position.coords.latitude;
   city.lon = position.coords.longitude;
   let response = await axios.get(
-    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=${process.env.gmaps_key}`
+    `https://maps.googleapis.com/maps/api/geocode/json?latlng=${city.lat},${city.lon}&result_type=locality&key=AIzaSyCO1-G6zrBrAP2-xYCRzGj-2HWhRcC5zPA`
   );
   city.name = response.data.results[0].formatted_address;
   city.type = 'browserGeo';
