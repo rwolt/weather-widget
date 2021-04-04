@@ -6,11 +6,11 @@ import image from './images/settings-gray.png';
 
 //Parameters for OpenWeather API
 const BASE_URL = 'https://api.openweathermap.org/data/2.5/onecall';
-const API_KEY = '';
+const API_KEY = '140e398af77205957ff8e464b82234c7';
 
 //Load Google Maps API
 const loader = new Loader({
-  apiKey: '',
+  apiKey: 'AIzaSyCO1-G6zrBrAP2-xYCRzGj-2HWhRcC5zPA',
   version: 'weekly',
   libraries: ['places'],
 });
